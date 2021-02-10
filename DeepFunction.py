@@ -8,34 +8,44 @@ Created on Fri Feb  5 15:21:46 2021
 import torch
 import math
 import matplotlib.pyplot as plt
+from torch.utils.data import Dataset
 
-x = []
+class FunctionData(Dataset):
+    def __init__(self):
+        self.X = []
 
-a = float(0.00)
+        a = float(0.00)
 
-for i in range(2001):
-    x.append(a)
-    a += float(0.001)
-    a = round(a, 3)
+        for i in range(8001):
+            self.X.append(a)
+            a += float(0.0001)
+            a = round(a, 4)
 
-fn = []
+        self.fn = []
 
-for i in x:
-    if i != 0.0:
-        fn.append(math.sin(5*math.pi*i)/(5*math.pi*i))
-    else:
-        fn.append(1.0)
+        for i in self.X:
+            if i != 0.0:
+                self.fn.append(math.sin(5*math.pi*i)/(5*math.pi*i))
+            else:
+                self.fn.append(1.0)
 
-plt.plot(fn)
-plt.show()
+        plt.plot(self.X, self.fn)
+        plt.show()
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        return self.X[idx], self.fn[idx]
+
+dataset = FunctionData()
 
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-dataset = merged_list = tuple(zip(x, fn))
 
-train, test = torch.utils.data.random_split(dataset, [601, 1400],generator=torch.Generator().manual_seed(42))
+train, test = torch.utils.data.random_split(dataset, [2401, 5600],generator=torch.Generator().manual_seed(42))
 
 trainloader = torch.utils.data.DataLoader(train, batch_size=30, shuffle=True)
 testloader = torch.utils.data.DataLoader(test, batch_size=1024, shuffle=False)
@@ -52,10 +62,10 @@ class Net(nn.Module):
         x = self.drop(F.logsigmoid(x))
         x = self.fc2(F.gelu(x))
         return x
-    
+
     def count_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
-    
+
 net = Net()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 net.to(device)
