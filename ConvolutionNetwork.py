@@ -40,6 +40,8 @@ class Net(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x)
 
+    def count_parameters(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
 net = Net()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -49,7 +51,7 @@ net.to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-for epoch in range(6):  # loop over the dataset multiple times
+for epoch in range(50):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):

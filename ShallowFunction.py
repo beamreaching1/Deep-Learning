@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb  5 15:21:46 2021
+Created on Mon Feb 15 12:40:20 2021
 
 @author: Cayden
 """
@@ -57,13 +57,11 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(1, 50)
-        self.fc2 = nn.Linear(50, 25)
-        self.fc3 = nn.Linear(25, 1)
+        self.fc1 = nn.Linear(1, 467)
+        self.fc3 = nn.Linear(467, 1)
 
     def forward(self, x):
         x = F.leaky_relu(self.fc1(x))
-        x = F.leaky_relu(self.fc2(x))
         x = self.fc3(x)
         return x
 
@@ -98,8 +96,8 @@ for epoch in range(50):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if i % 2399 == 0:    # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.8f' %
+        if i % 500 == 0:    # print every 2000 mini-batches
+            print('[%d, %5d] loss: %.3f' %
                   (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
@@ -114,39 +112,9 @@ for i, data in enumerate(testloader, 0):
     Y.append(outputs.item())
     
 order = np.argsort(X)
-xd = np.array(X)[order]
-yd = np.array(Y)[order]
-
-class Net(nn.Module):
-    def __init__(self):
-        super(Net, self).__init__()
-        self.fc1 = nn.Linear(1, 467)
-        self.fc3 = nn.Linear(467, 1)
-
-    def forward(self, x):
-        x = F.leaky_relu(self.fc1(x))
-        x = self.fc3(x)
-        return x
-
-    def count_parameters(self):
-        return sum(p.numel() for p in self.parameters() if p.requires_grad)
-net = torch.load("./data/shallowModel.pt")
-
-Y = []
-X = []
-
-for i, data in enumerate(testloader, 0):
-    inputs, target = data[0], data[1]
-    outputs = net(inputs.float())
-    X.append(inputs.item())
-    Y.append(outputs.item())
-    
-order = np.argsort(X)
 xs = np.array(X)[order]
 ys = np.array(Y)[order]
 
-plt.plot(xd, yd, "-r", label='DeepModel')
-plt.plot(xs, ys, "-g", label='ShallowModel')
-plt.plot(dataset.X, dataset.fn, "-b",label='GroundTruth')
-plt.legend(loc='upper right')
+plt.plot(xs, ys, "-r")
+plt.plot(dataset.X, dataset.fn, "-b")
 plt.show()
