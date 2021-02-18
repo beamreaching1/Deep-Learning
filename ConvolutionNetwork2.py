@@ -1,6 +1,10 @@
 import torch
 import torchvision
 import torchvision.transforms as transforms
+#import random
+
+#torch.manual_seed(random.randint(0, 1000))
+#torch.cuda.manual_seed_all(random.randint(0, 1000))
 
 transform = transforms.Compose(
     [transforms.ToTensor(),
@@ -26,15 +30,12 @@ class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=3)
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(180, 50)
+        self.fc1 = nn.Linear(1690, 50)
         self.fc2 = nn.Linear(50, 10)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 3))
-        x = x.view(-1, 180)
+        x = x.view(-1, 1690)
         x = F.relu(self.fc1(x))
         x = F.dropout(x, training=self.training)
         x = self.fc2(x)
@@ -53,9 +54,53 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 epochLoss = []
 epochAccuracy = []
+l1w = []
+lw = []
 
 for epoch in range(40):  # loop over the dataset multiple times
+    
+    """if epoch % 3 == 0:
+        p = []
+        for params in net.parameters():
+            p.append(params)
+        
+        layer1Weights = torch.reshape(p[0], (2,int(p[0].numel()/2)))
+        (U, S, V)=torch.pca_lowrank(layer1Weights, q=1, center=True)
+        l1w.append(([U[0].item(),U[1].item(), S.item()]))
+        
+        for x in range(len(p)):
+            p[x] = torch.reshape(p[x], (2,int(p[x].numel()/2)))
+        for x in range(len(p)-1):
+            a = torch.cat((p[0][0],p[x+1][0]))
+            b = torch.cat((p[0][1],p[x+1][1]))
+            p[0] = torch.stack((a,b))
+        
+        (U, S, V)=torch.pca_lowrank(p[0], q=1, center=True)
+        lw.append(([U[0].item(),U[1].item(), S.item()]))"""
+        
+    """if epoch % 3 == 0:
+        p = []
+        for params in net.parameters():
+            p.append(params)
+        
+        layer1Weights = torch.reshape(p[0], (2,int(p[0].numel()/2)))
+        a = torch.sum(layer1Weights[0])
+        b = torch.sum(layer1Weights[1])
+        
+        l1w.append([a,b])
+        
+        for x in range(len(p)):
+            p[x] = torch.reshape(p[x], (2,int(p[x].numel()/2)))
+        for x in range(len(p)-1):
+            a = torch.cat((p[0][0],p[x+1][0]))
+            b = torch.cat((p[0][1],p[x+1][1]))
+            p[0] = torch.stack((a,b))
+        
+        a = torch.sum(p[0])
+        b = torch.sum(p[1])
+        lw.append(([a,b]))"""
 
+   
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         # get the inputs; data is a list of [inputs, labels]
@@ -72,6 +117,14 @@ for epoch in range(40):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
+        
+        grad_all = 0.0
+        
+        for p in net.parameters():
+            grad = 0.0
+            if p.grad is not None:
+                grad = (p.grad.cpu().data.numpy() ** 2).sum()
+            grad_all += grad
         
     print('[%d, %5d] loss: %.8f' %
           (epoch + 1, i + 1, running_loss / len(trainloader)))

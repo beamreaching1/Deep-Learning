@@ -78,6 +78,8 @@ criterion = torch.nn.MSELoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 print(net.count_parameters())
 
+epochLoss = []
+
 for epoch in range(50):  # loop over the dataset multiple times
 
     running_loss = 0.0
@@ -96,11 +98,17 @@ for epoch in range(50):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
-        if i % 500 == 0:    # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
-            running_loss = 0.0
 
+    print('[%d, %5d] loss: %.8f' %
+          (epoch + 1, i, running_loss / len(trainloader) ))
+    epochLoss.append(running_loss / len(trainloader))
+
+plt.title("Loss Vs Epoch", loc="center")
+plt.plot(epochLoss, "-b", label='ShallowModel')
+plt.legend(loc='upper right')
+plt.show()
+
+"""
 net.cpu()
 Y = []
 X = []
@@ -118,3 +126,4 @@ ys = np.array(Y)[order]
 plt.plot(xs, ys, "-r")
 plt.plot(dataset.X, dataset.fn, "-b")
 plt.show()
+"""
