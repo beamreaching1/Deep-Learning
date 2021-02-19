@@ -8,7 +8,7 @@ transform = transforms.Compose(
 
 trainset = torchvision.datasets.MNIST(root='./data', train=True,
                                         download=True, transform=transform)
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=256,
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=32,
                                           shuffle=True, num_workers=0)
 
 testset = torchvision.datasets.MNIST(root='./data', train=False,
@@ -54,7 +54,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 epochLoss = []
 epochAccuracy = []
 
-for epoch in range(40):  # loop over the dataset multiple times
+for epoch in range(8):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):

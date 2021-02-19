@@ -56,6 +56,7 @@ epochLoss = []
 epochAccuracy = []
 l1w = []
 lw = []
+grad_norm = []
 
 for epoch in range(40):  # loop over the dataset multiple times
     
@@ -118,13 +119,16 @@ for epoch in range(40):  # loop over the dataset multiple times
         # print statistics
         running_loss += loss.item()
         
-        grad_all = 0.0
+        if epoch == 0:
+            grad_all = 0.0
         
-        for p in net.parameters():
-            grad = 0.0
-            if p.grad is not None:
-                grad = (p.grad.cpu().data.numpy() ** 2).sum()
-            grad_all += grad
+            for p in net.parameters():
+                grad = 0.0
+                if p.grad is not None:
+                    grad = (p.grad.cpu().data.numpy() ** 2).sum()
+                grad_all += grad
+            
+            grad_norm.append([grad_all ** 0.5, loss.item()])
         
     print('[%d, %5d] loss: %.8f' %
           (epoch + 1, i + 1, running_loss / len(trainloader)))

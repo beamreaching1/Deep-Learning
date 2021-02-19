@@ -83,10 +83,11 @@ print(net.count_parameters())
 epochLoss = []
 l1w = []
 lw = []
+grad_norm = []
 
-for epoch in range(40):  # loop over the dataset multiple times
+for epoch in range(2):  # loop over the dataset multiple times
 
-    if epoch % 3 == 0:
+    """if epoch % 3 == 0:
         p = []
         for params in net.parameters():
             p.append(params)
@@ -108,7 +109,7 @@ for epoch in range(40):  # loop over the dataset multiple times
         
         a = torch.sum(p[0])
         b = torch.sum(p[1])
-        lw.append(([a,b]))
+        lw.append(([a,b]))"""
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -126,10 +127,24 @@ for epoch in range(40):  # loop over the dataset multiple times
 
         # print statistics
         running_loss += loss.item()
+        if epoch == 0:
+            grad_all = 0.0
+        
+            for p in net.parameters():
+                grad = 0.0
+                if p.grad is not None:
+                    grad = (p.grad.cpu().data.numpy() ** 2).sum()
+                grad_all += grad
+            
+            grad_norm.append([grad_all ** 0.5, loss.item()])
+        
+        
+        
         
     print('[%d, %5d] loss: %.8f' %
           (epoch + 1, i, running_loss / len(trainloader) ))
     epochLoss.append(running_loss / len(trainloader))
+
 
 plt.title("Loss Vs Epoch", loc="center")
 plt.plot(epochLoss, "-r", label='DeepModel')
