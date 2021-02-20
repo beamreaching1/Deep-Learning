@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Feb 19 15:59:28 2021
-
+!!!!!!!!!!!!!!!!!!!!!
+Must use a spyder Console to run this
+!!!!!!!!!!!!!!!!!!!!!
 @author: Cayden
 """
 lossTestDat = []

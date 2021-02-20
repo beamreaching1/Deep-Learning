@@ -47,7 +47,7 @@ plt.show()
 
 train, test = torch.utils.data.random_split(dataset, [2400, 5601],generator=torch.Generator().manual_seed(42))
 
-trainloader = torch.utils.data.DataLoader(train, batch_size=20, shuffle=True)
+trainloader = torch.utils.data.DataLoader(train, batch_size=10, shuffle=True)
 testloader = torch.utils.data.DataLoader(test, batch_size=1, shuffle=False)
 
 import torch.nn as nn
@@ -57,8 +57,8 @@ import torch.nn.functional as F
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(20, 50)
-        self.fc2 = nn.Linear(50, 26)
+        self.fc1 = nn.Linear(10, 37)
+        self.fc2 = nn.Linear(37, 26)
         self.fc3 = nn.Linear(26, 1)
 
     def forward(self, x):

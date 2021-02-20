@@ -83,7 +83,7 @@ epochLoss = []
 grad_norm = []
 lastLoss = 0.0
 
-for epoch in range(10):  # loop over the dataset multiple times
+for epoch in range(100):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -127,14 +127,14 @@ for epoch in range(10):  # loop over the dataset multiple times
         
     print("Gradient Normal: ",grad_all ** 0.5)
 
-optimizer = optim.Adam(net.parameters(), lr=0.001)
+optimizer = optim.Adam(net.parameters(), lr=0.0001)
 print(net.count_parameters())
 
 epochLoss = []
 grad_norm = []
 
 
-for epoch in range(10):  # loop over the dataset multiple times
+for epoch in range(100):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):

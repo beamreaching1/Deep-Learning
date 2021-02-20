@@ -20,7 +20,7 @@ testset = torchvision.datasets.MNIST(root='./data', train=False,
 
 testset.targets = [random.randint(0, 9) for _ in range(len(testset))]
 
-testloader = torch.utils.data.DataLoader(testset, batch_size=4,
+testloader = torch.utils.data.DataLoader(testset, batch_size=1,
                                          shuffle=False, num_workers=0)
 
 classes = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
@@ -48,13 +48,13 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 net.to(device)
 
 
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.1)
+criterion = nn.MSELoss()
+optimizer = optim.Adam(net.parameters(), lr=0.01)
 
-epochLoss = []
-epochAccuracy = []
+epochTrainLoss = []
+epochTestLoss = []
 
-for epoch in range(1000):  # loop over the dataset multiple times
+for epoch in range(500):  # loop over the dataset multiple times
    
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -67,18 +67,19 @@ for epoch in range(1000):  # loop over the dataset multiple times
         optimizer.zero_grad()
 
         # forward + backward + optimize
-        outputs = net(inputs)
-        loss = criterion(outputs, labels)
+        outputs = net(inputs.float())
+        loss = criterion(outputs, labels.float())
         loss.backward()
         optimizer.step()
 
         # print statistics
         running_loss += loss.item()
         
-    print('[%d, %5d] loss: %.8f' %
+    print('[%d, %5d] Train Loss: %.8f' %
           (epoch + 1, i + 1, running_loss / len(trainloader)))
-    epochLoss.append(running_loss / len(trainloader))
+    epochTrainLoss.append(running_loss / len(trainloader))
     
+    running_loss = 0.0
     correct = 0
     total = 0
     with torch.no_grad():
@@ -86,41 +87,12 @@ for epoch in range(1000):  # loop over the dataset multiple times
             images, labels = data[0].to(device), data[1].to(device)
             outputs = net(images)
             _, predicted = torch.max(outputs.data, 1)
+            loss = criterion(outputs, labels.float())
+            running_loss += loss.item()
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
     
-    epochAccuracy.append((100 * correct / total))
-
+    epochTestLoss.append(running_loss / len(trainloader))
+    print('[%d, %5d] Test Loss: %.8f' %
+          (epoch + 1, i + 1, running_loss / len(trainloader)))
 print('Finished Training')
-
-"""
-correct = 0
-total = 0
-with torch.no_grad():
-    for data in testloader:
-        images, labels = data[0].to(device), data[1].to(device)
-        outputs = net(images)
-        _, predicted = torch.max(outputs.data, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
-
-print('Accuracy of the network on the 10000 test images: %d %%' % (
-    100 * correct / total))
-
-class_correct = list(0. for i in range(10))
-class_total = list(0. for i in range(10))
-with torch.no_grad():
-    for data in testloader:
-        images, labels = data[0].to(device), data[1].to(device)
-        outputs = net(images)
-        _, predicted = torch.max(outputs, 1)
-        c = (predicted == labels).squeeze()
-        for i in range(4):
-            label = labels[i]
-            class_correct[label] += c[i].item()
-            class_total[label] += 1
-
-
-for i in range(10):
-    print('Accuracy of %5s : %2d %%' % (
-        classes[i], 100 * class_correct[i] / class_total[i]))"""
