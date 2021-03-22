@@ -1,6 +1,8 @@
 
-hw2/MLDS_hw2_1_data/
-hw2/MLDS_hw2_1_data.tar.gz
-hw2/HW2-deep2.pdf
-hw2/HW2-deep1.pdf
+hw2/hw2_1/MLDS_hw2_1_data/
+hw2/hw2_1/MLDS_hw2_1_data.tar.gz
 *.pdf
+hw2/hw2_1/DatasetPreload
+*.zip
+*.docx
+hw2/hw2_1/Models/*
