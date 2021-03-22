@@ -7,3 +7,5 @@ if ! [  -f ./modelBest-Current -a  -f ./DatasetPreload ]; then
 	unzip hw2.zip
 	#rm hw2.zip
 fi
+
+python3 testModel.py $1 $2
