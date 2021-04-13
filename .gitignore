@@ -8,3 +8,8 @@ hw2/hw2_1/Models/*
 hw2/hw2_1/HW2-deep1.pdf
 hw2/hw2_1/HW2-deep2.pdf
 hw2/hw2_1/~WRL0003.tmp
+*.png
+*.jpeg
+hw3/data/cifar-10-python.tar.gz
+hw3/data/*
+hw3/1807.09499.pdf
