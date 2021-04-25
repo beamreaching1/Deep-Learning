@@ -1,5 +1,5 @@
 To run this program either type ./run.sh or python3 testXGAN.py where X is AC, DC, or W.
-To test the FID score of each of this models use...
+To test the FID score of each of these models use...
 
 python3 -m pytorch_fid --device cuda:0 ./fakeX/ ./realX/
 
